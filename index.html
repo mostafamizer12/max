@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
+<script>
+  (async function () {
+    // Use this endpoint to get the token
+    const res = await fetch('https://poukiai.openai.azure.com/openai/deployments/pouki/chat/completions?api-version=2023-03-15-preview', { method: 'POST' });
+    const { token } = await res.json();
+
+    // Use this endpoint to get the conversation ID
+    const res2 = await fetch('https://poukiai.openai.azure.com/openai/deployments/pouki/chat/conversations?api-version=2023-03-15-preview', { method: 'POST' });
+    const { conversationId } = await res2.json();
+
+    // Use this endpoint to get the messages from Azure OpenAI
+    const res3 = await fetch('https://poukiai.openai.azure.com/openai/deployments/pouki/chat/conversations/' + conversationId + '/activities?api-version=2023-03-15-preview', { method: 'GET' });
+    const { activities } = await res3.json();
+
+    // Render web chat control
+    window.WebChat.renderWebChat(
+      {
+        directLine: window.WebChat.createDirectLine({ token }),
+        activities
+      },
+      document.getElementById('webchat')
+    );
+  })().catch(err => console.error(err));
+</script>
+<div id="webchat" role="main"></div>
+</body>
+</html>
